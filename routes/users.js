@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const auth = require("../middleware/auth");
 const z = require("zod");
+const EmailAlreadyBeenUsed = require("../errors/EmailAlreadyBeenUsed");
 const router = express.Router();
 
 const userSchema = z.object({
@@ -21,10 +22,7 @@ router.post("/register", async (req, res, next) => {
   try {
     const user = userSchema.parse(req.body);
     const isEmailAlreadyUsed = await findUserbyEmail(user.email);
-    if (isEmailAlreadyUsed)
-      return res.status(400).json({
-        message: "Email already is being used",
-      });
+    if (isEmailAlreadyUsed) throw new EmailAlreadyBeenUsed();
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
     user.password = hashedPassword;
     const savedUser = await saveUser(user);
