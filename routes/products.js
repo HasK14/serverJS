@@ -37,7 +37,7 @@ router.get("/products/:id", auth, async (req, res) => {
   });
 });
 
-router.post("/products", auth, async (req, res) => {
+router.post("/products", auth, async (req, res, next) => {
   try {
     const newProduct = productSchema.parse(req.body);
     const savedProduct = await saveProduct(newProduct);
@@ -45,11 +45,7 @@ router.post("/products", auth, async (req, res) => {
       product: savedProduct,
     });
   } catch (err) {
-    if (err instanceof z.ZodError)
-      return res.status(422).json({
-        message: err.errors,
-      });
-    res.status(500).json({ message: "Server Error " });
+    next(err);
   }
 });
 
