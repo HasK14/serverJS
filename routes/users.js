@@ -17,7 +17,7 @@ const userSchema = z.object({
   age: z.number().optional(),
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", async (req, res, next) => {
   try {
     const user = userSchema.parse(req.body);
     const isEmailAlreadyUsed = await findUserbyEmail(user.email);
@@ -33,13 +33,7 @@ router.post("/register", async (req, res) => {
       user: savedUser,
     });
   } catch (err) {
-    if (err instanceof z.ZodError)
-      return res.status(422).json({
-        message: err.errors,
-      });
-    res.status(500).json({
-      message: "Server error",
-    });
+    next(err);
   }
 });
 
