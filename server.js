@@ -9,6 +9,8 @@ const EmailAlreadyBeenUsed = require("./errors/EmailAlreadyBeenUsed");
 const server = express();
 server.use(express.json());
 
+server.use(logger);
+
 server.use(healthRoutes.router);
 server.use(productsRoutes.router);
 server.use(usersRoutes.router);
